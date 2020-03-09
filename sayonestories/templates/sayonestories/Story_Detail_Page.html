@@ -1,0 +1,398 @@
+{% extends 'base_layout2.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<div class="container mb2">
+
+
+   <div class="row" >
+       <div class="col-2 ">
+
+       </div>
+       <div class="col-8 pt-5 " id="detaildiv">
+
+           <div class="card">
+               <div class="card-body heading2 bg-warning">{{ story.story_title}}</div>
+           </div>
+           <div class="card pt-4">
+               {% if blog %}
+               <img height="400px" src="{{story.blog_story.blog_pic.url}}" width="100%">
+               {% endif %}
+
+               {% if substory %}
+
+               <div class="w3-content w3-display-container">
+                   {% for item in substory %}
+                   <img class="mySlides" height="400px" src="{{ item.file.url }}" style="width:100%">
+                   {% endfor %}
+                {{substory.first.description}}
+                   <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+                   <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
+               </div>
+               {% endif %}
+
+           </div>
+           <div class="pt-2 ">
+               <h3 class="dancingscript">Views:{{story.story_views}}</h3>
+               <h3 class="dancingscript text-right">{{story.story_author}}</h3>
+              <h3 class="dancingscript text-right">{{story.date_created}}</h3>
+
+
+           </div>
+
+           <div class="p-2 mt-2 crimson" style="white-space:pre-wrap;">
+               {{story.blog_story.blog_description}}
+           </div>
+
+<div id="commentsdiv">
+           {% for comment in comments %}
+           <div class="container border mt-2">
+               <div class="mt-4 alert alert-dark" style="overflow-wrap: break-word;">
+                   <p> {{ comment.comment }} </p>
+                   <p class="text-right text-primary"> -{{ comment.user_commented.sayone_user.name|title}}
+
+
+                       {{comment.date_commented}}
+ </p>
+                   <!--                    <input id="btnPassport" name="btnPassport" type="button" value="reply"/>-->
+
+
+               </div>
+               <input class="showSingle btn btn-sm btn-primary" target="{{comment.id}}" type="button" value="Reply">
+
+               <div id="div{{comment.id}}" class="targetDiv">
+
+                   <form class="thereplyform{{comment.id}}">
+                       {% csrf_token %}
+                       <input name="id" type="hidden" value="{{comment.id}}" id="comment">
+                       <input name="story_id" type="hidden" value="{{story.story_id}}" id="story">
+                       {{form2}}
+                       <button class="btn btn-sm btn-primary mt-2" type="submit" id="replybtn">Reply</button>
+                   </form>
+
+
+               </div>
+
+               <br>
+
+<div id="reply{{comment.id}}">
+
+               {% for reply in comment.reply_to_comment.all %}
+               <div class="offset-md-2 alert alert-secondary" id="replies">
+                   <h6 class="text-primary"> {{reply.user_replied.get_full_name}} -> {{reply.user_replied_to.get_full_name}}
+                       {{reply.date_replied | timesince}} ago</h6>
+
+                   <h6>{{reply.reply}} </h6>
+               </div>
+               {% endfor %}
+</div>
+
+           </div>
+           {% endfor %}
+</div>
+
+           <div>
+               <form id="commentform" name="geek" >
+                   <input type="hidden" name="storyid2" value="{{story.story_id}}">
+                   {% csrf_token %}
+                   {{ form }}
+                   <button class="btn btn-sm btn-warning mt-2" name="comment" type="submit">Add comment</button>
+               </form>
+           </div>
+
+
+       </div>
+
+
+       <div class="col-2 my-auto " id="likefav">
+
+           <div>
+               {% if liked == 'own' %}
+               <img height="50px" id="like" src="{% static 'images/love4.png' %}" width="50px">
+
+               {% elif liked == 'no' %}
+
+               <img height="50px" id="like" src="{% static 'images/love4.png' %}" width="50px">
+               {% else %}
+               <img height="50px" id="like" src="{% static 'images/lovely.png' %}" width="50px">
+               {% endif %}
+               <div id="counter"><b>{{story.story_likes}}</b></div>
+           </div>
+           <br>
+           <div  >
+               <img src="{% static 'images/favourite.png' %}" width="50px" height="50px" id="fav">
+                Favourites
+
+           </div>
+
+
+       </div>
+
+
+   </div>
+
+
+   <script>
+var slideIndex = 1;
+showDivs(slideIndex);
+
+function plusDivs(n) {
+showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+var i;
+var x = document.getElementsByClassName("mySlides");
+if (n > x.length) {slideIndex = 1}
+if (n < 1) {slideIndex = x.length}
+for (i = 0; i < x.length; i++) {
+ x[i].style.display = "none";
+}
+x[slideIndex-1].style.display = "block";
+}
+
+
+
+   </script>
+   <script>
+var like = "{% static 'images/lovely.png' %}"
+var like2 = "{% static 'images/love4.png' %}"
+var counter = {{ story.story_likes }}
+
+
+ $(document).ready(function(){
+$("#like").click(function(){
+
+$.ajax({
+     url: "{% url 'like_story' story.story_id %}",
+
+     dataType: 'json',
+     success: function (data) {
+       if (data.is_valid == 'own' ) {
+}
+else if (data.is_valid =='yes' ){
+            counter++;
+            $('#counter').text(counter);
+           $("#like").attr("src",like);
+
+
+       }
+       else {
+       counter--;
+       $('#counter').text(counter);
+       $("#like").attr("src",like2);
+       }
+     }
+   });
+
+
+
+});
+
+$('#fav').click(function(){
+
+
+$.ajax({
+
+   url: "{% url 'add_to_fav' story.story_id %}",
+
+     dataType: 'json',
+     success: function (data) {
+     if(data.added == 'yes' ){
+
+     $('#likefav').append('<div class="alert alert-success alert-dismissible mt-2">'+
+     '<a href="#" class="close" data-dismiss="alert" aria-label="close">'+'&times;'+'</a>'+'Added to favourites'+'</div>');
+
+
+     }
+     else{
+     $('#likefav').append('<div class="alert alert-success alert-dismissible mt-2">'+
+     '<a href="#" class="close" data-dismiss="alert" aria-label="close">'+'&times;'+'</a>'+ 'Already added' +'</div>');
+
+
+     }
+}
+
+
+});
+
+});
+
+});
+
+
+
+   </script>
+
+   <script type="text/javascript">
+ $(function () {
+     $("#btnPassport").click(function () {
+         if ($(this).val() == "reply") {
+             $("#dvPassport").show();
+             $(this).val("cancel");
+         } else {
+             $("#dvPassport").hide();
+             $(this).val("reply");
+         }
+     });
+ });
+
+
+   </script>
+
+
+   <script type="text/javascript">
+// var clicks = 0;
+//        jQuery(function() {
+// jQuery('.targetDiv').hide()
+//  jQuery('.showSingle').click(function() {
+
+// if(clicks == 0)
+// {
+//    jQuery('#div'+$(this).attr('target')).show();
+//    clicks++;
+//    $(this).val("cancel");
+// }
+// else {
+// $('.form-control').val('');
+// jQuery('#div'+$(this).attr('target')).hide();
+// clicks--;
+// $(this).val("reply");
+
+// }
+
+//  });
+
+
+// });
+
+//
+   </script>
+
+
+   <script>
+var clicks = 0;
+  $(document).ready(function()
+  {
+
+  $('#detaildiv').on('submit', 'form', function(event) {
+     event.preventDefault();
+   var $form = $(this);
+var token = '{{csrf_token}}';
+var replyform = '{{form2|linebreaks}}';
+
+
+ $.ajax({
+     type:'POST',
+     url:'{% url "add_reply"  %}',
+     data:{
+         comment_id :$form.find('[name=id]').val(),
+         story_id:$form.find('[name=story_id]').val(),
+         reply_text:$form.find('[class=form-control]').val(),
+         story_id2:$form.find('[name=storyid2]').val(),
+         comment :$form.find('[id=comm]').val(),
+         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+         action: 'post'
+     },
+     success:function(json){
+
+         if(clicks!=0)
+         {
+             $('#div'+json.divid).hide();
+             $('.form-control').val('');
+      $('.showSingle').val("reply")
+      clicks--;
+      $('#reply'+json.divid).append('<div class="offset-md-2 alert alert-secondary">'+
+      '<h6 class="text-primary">'+json.response.replied_by+'->'+json.response.replied_to+'</h6>'+
+      '<h6>'+json.response.reply+'</h6>'+'</div');
+         }
+
+         if(json.comment=='com'){
+         var target_id = json.response.comment_id;
+         var selected_date = new Date({{ json.response.date_commented|escapejs }})
+
+       $('#commentsdiv').append('<div class="container border mt-2">'+
+       '<div class="mt-4 alert alert-dark">'+
+       '<p>'+json.response.comment+'</p>'+
+       '<p class="text-right text-primary">'+json.response.user_commented+
+       '-'+selected_date+'</p>'+'</div>'+
+       '<input class="showSingle btn btn-sm btn-primary" target='+json.response.comment_id+' type="button" value="Reply">'
+       +'<div id="div'+json.response.comment_id+'"'+' class="targetDiv">'+'<form class="thereplyform'+json.response.comment_id+'"'+'>'+
+       '<input type="hidden" name="csrfmiddlewaretoken" value="'+token+'"'+'>'+
+       '<input type="hidden" name="id" value='+json.response.comment_id+'  id="comment">'+
+
+       '<input type="hidden" name="story_id" value='+json.response.story_id+' id="story">'+
+       replyform+
+       '<button class="btn btn-sm btn-primary mt-2" type="submit" text="reply" >'+'reply'+'</button>'+
+       '</form>'
+       +'</div>'+
+       '<div id="reply'+json.response.comment_id+'"'+'>'+
+       '</div>'
+
+
+       );
+
+ $('#div'+json.response.comment_id).hide();
+document.getElementById("commentform").reset();
+ clicks = 0;
+
+
+
+         }
+     },
+
+});
+     });
+
+
+
+
+
+jQuery('.targetDiv').hide()
+
+$('#commentsdiv').on('click', '.showSingle', function(){
+   // do something here
+<!--});-->
+
+<!--jQuery('.showSingle').click(function() {-->
+
+console.log(clicks);
+
+if(clicks == 0)
+{
+ jQuery('#div'+$(this).attr('target')).show();
+ clicks = 1;
+ $(this).val("Cancel");
+}
+else {
+$('.form-control').val('');
+jQuery('#div'+$(this).attr('target')).hide();
+clicks = 0;
+$(this).val("Reply");
+
+}
+
+});
+
+
+
+
+  });
+
+
+   </script>
+</div>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
