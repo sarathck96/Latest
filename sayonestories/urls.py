@@ -12,4 +12,7 @@ urlpatterns = [
     path('AddBlog', views.addblog, name='Add_Blog'),
     path('AddGallery',views.addgallery, name='Add_Gallery'),
     path('StoryDetail/<int:id>/', views.story_detail_page, name='Story_Detail_Page'),
+    path('like_story/<int:story_id>/', views.like_story, name='like_story'),
+    path('addfav/<int:story_id>/',views.add_to_fav,name='add_to_fav'),
+    path('addreply',views.add_reply, name='add_reply'),
 ]

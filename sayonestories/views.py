@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.core.mail import send_mail
 import random
 import re
 from .forms import SignUpForm, StoryAddForm, AddBlogForm, MultiUploadForm, AddCommentForm, ReplyForm
-from .models import Profile, Like, Comment, StoryView, Reply, Story, Blog, Image
+from .models import Profile, Like, Comment, StoryView, Reply, Story, Blog, Image, Favourite
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 
@@ -74,7 +74,7 @@ def user_home_page(request):
     top_blogs = Story.objects.filter(stype=Story.BLOG).filter(status=Story.PUBLISH).order_by('-likes')[:3]
     top_gallery = Story.objects.filter(stype=Story.GALLERY).filter(status=Story.PUBLISH).order_by('-likes')[:3]
 
-    context = {'events':top_events,'blogs':top_blogs,'gallery':top_gallery}
+    context = {'events': top_events, 'blogs': top_blogs, 'gallery': top_gallery}
     return render(request, 'sayonestories/UserHome.html', context)
 
 
@@ -234,3 +234,91 @@ def record_view(request, story_id):
     number_of_visits = StoryView.objects.filter(story=story_obj).count()
 
     return number_of_visits
+
+
+def like_story(request, story_id):
+    """ allows the user to like a story .checks whether the user have already liked the story .if already liked alerts
+     the user that story is liked ,else increments the like count by one. story_id is unique id of story used to check
+     whether user have already liked the story """
+
+    story = get_object_or_404(Story, id=story_id)
+
+    can_like = ''
+    if story.user == request.user:
+        can_like = 'own'
+
+    elif Like.objects.filter(user=request.user).filter(story=story):
+        Story.objects.filter(id=story_id).update(likes=F('likes') - 1)
+        Like.objects.filter(story=story).delete()
+        can_like = 'no'
+    else:
+        Story.objects.filter(id=story_id).update(likes=F('likes') + 1)
+        like = Like.objects.create(user=request.user, story=story)
+        can_like = 'yes'
+    print('can_like', can_like)
+
+    data = {'is_valid': can_like}
+    return JsonResponse(data)
+
+
+def add_to_fav(request, story_id):
+    print('call in fav')
+    story_obj = Story.objects.get(id=story_id)
+    fav_obj = Favourite.objects.filter(user=request.user, story=story_obj)
+
+    if len(fav_obj) == 0:
+        new_fav_obj = Favourite.objects.create(user=request.user, story=story_obj)
+        return JsonResponse({'added': 'yes'})
+
+    else:
+
+        return JsonResponse({'added': 'no'})
+
+
+def add_reply(request):
+    print('call here...........///////////')
+
+    if request.POST.get('action') == 'post':
+        story_id = request.POST.get('story_id')
+        comm_id = request.POST.get('comment_id')
+        reply_text = request.POST.get('reply_text')
+        story_id2 = request.POST.get('story_id2')
+    print('id2', story_id2)
+    if story_id2 is None:
+        print('reply section')
+        story_obj = Story.objects.filter(id=story_id)[0]
+        print('storyid', story_id)
+        print('commentid', comm_id)
+        print('replytext', reply_text)
+
+        comment_obj = Comment.objects.filter(id=comm_id)[0]
+        user_replied = request.user
+
+        reply_obj = Reply.objects.create(reply=reply_text, comment=comment_obj, user=user_replied)
+
+        response_list = []
+        for item in comment_obj.reply_to_comment.all():
+            temp_dict = {}
+            temp_dict['reply'] = item.reply
+            temp_dict['replied_by'] = item.user.get_full_name()
+
+
+        print(temp_dict)
+        return JsonResponse({'response': temp_dict, 'divid': comm_id}, safe=False)
+    else:
+        print('comment section')
+        story_obj = Story.objects.filter(id=story_id2)[0]
+        user_commented = request.user
+        comment = request.POST.get('comment')
+        comment_obj = Comment.objects.create(user=user_commented, story=story_obj, comment=comment)
+
+        temp_dict2 = {}
+        temp_dict2['comment'] = comment_obj.comment
+        temp_dict2['user_commented'] = comment_obj.user.get_full_name
+
+        temp_dict2['comment_id'] = comment_obj.id
+        temp_dict2['story_id'] = story_id2
+
+        temp_dict2['date_commented'] = comment_obj.created
+
+        return JsonResponse({'response': temp_dict2, 'comment': 'com'})

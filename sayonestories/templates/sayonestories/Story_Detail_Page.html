@@ -15,11 +15,11 @@
        <div class="col-8 pt-5 " id="detaildiv">
 
            <div class="card">
-               <div class="card-body heading2 bg-warning">{{ story.story_title}}</div>
+               <div class="card-body heading2 bg-warning">{{ story.title}}</div>
            </div>
            <div class="card pt-4">
                {% if blog %}
-               <img height="400px" src="{{story.blog_story.blog_pic.url}}" width="100%">
+               <img height="400px" src="{{story.blog_story.pic.url}}" width="100%">
                {% endif %}
 
                {% if substory %}
@@ -36,15 +36,15 @@
 
            </div>
            <div class="pt-2 ">
-               <h3 class="dancingscript">Views:{{story.story_views}}</h3>
-               <h3 class="dancingscript text-right">{{story.story_author}}</h3>
-              <h3 class="dancingscript text-right">{{story.date_created}}</h3>
+               <h3 class="dancingscript">Views:{{story.views}}</h3>
+               <h3 class="dancingscript text-right"></h3>
+              <h3 class="dancingscript text-right">{{story.created}}</h3>
 
 
            </div>
 
            <div class="p-2 mt-2 crimson" style="white-space:pre-wrap;">
-               {{story.blog_story.blog_description}}
+               {{story.blog_story.description}}
            </div>
 
 <div id="commentsdiv">
@@ -52,10 +52,10 @@
            <div class="container border mt-2">
                <div class="mt-4 alert alert-dark" style="overflow-wrap: break-word;">
                    <p> {{ comment.comment }} </p>
-                   <p class="text-right text-primary"> -{{ comment.user_commented.sayone_user.name|title}}
+                   <p class="text-right text-primary">
 
 
-                       {{comment.date_commented}}
+                       {{comment.created}}
  </p>
                    <!--                    <input id="btnPassport" name="btnPassport" type="button" value="reply"/>-->
 
@@ -68,7 +68,7 @@
                    <form class="thereplyform{{comment.id}}">
                        {% csrf_token %}
                        <input name="id" type="hidden" value="{{comment.id}}" id="comment">
-                       <input name="story_id" type="hidden" value="{{story.story_id}}" id="story">
+                       <input name="story_id" type="hidden" value="{{story.id}}" id="story">
                        {{form2}}
                        <button class="btn btn-sm btn-primary mt-2" type="submit" id="replybtn">Reply</button>
                    </form>
@@ -82,8 +82,8 @@
 
                {% for reply in comment.reply_to_comment.all %}
                <div class="offset-md-2 alert alert-secondary" id="replies">
-                   <h6 class="text-primary"> {{reply.user_replied.get_full_name}} -> {{reply.user_replied_to.get_full_name}}
-                       {{reply.date_replied | timesince}} ago</h6>
+                   <h6 class="text-primary"> {{reply.user.get_full_name}} -> {{reply.user.get_full_name}}
+                       {{reply.created | timesince}} ago</h6>
 
                    <h6>{{reply.reply}} </h6>
                </div>
@@ -96,7 +96,7 @@
 
            <div>
                <form id="commentform" name="geek" >
-                   <input type="hidden" name="storyid2" value="{{story.story_id}}">
+                   <input type="hidden" name="storyid2" value="{{story.id}}">
                    {% csrf_token %}
                    {{ form }}
                    <button class="btn btn-sm btn-warning mt-2" name="comment" type="submit">Add comment</button>
@@ -119,7 +119,7 @@
                {% else %}
                <img height="50px" id="like" src="{% static 'images/lovely.png' %}" width="50px">
                {% endif %}
-               <div id="counter"><b>{{story.story_likes}}</b></div>
+               <div id="counter"><b>{{story.likes}}</b></div>
            </div>
            <br>
            <div  >
@@ -167,7 +167,7 @@ var counter = {{ story.story_likes }}
 $("#like").click(function(){
 
 $.ajax({
-     url: "{% url 'like_story' story.story_id %}",
+     url: "{% url 'like_story' story.id %}",
 
      dataType: 'json',
      success: function (data) {
@@ -197,7 +197,7 @@ $('#fav').click(function(){
 
 $.ajax({
 
-   url: "{% url 'add_to_fav' story.story_id %}",
+   url: "{% url 'add_to_fav' story.id %}",
 
      dataType: 'json',
      success: function (data) {
