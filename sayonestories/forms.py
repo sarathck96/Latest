@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import MinLengthValidator
-from .models import Story, Blog, Image, Comment, Reply
+from .models import Story, Blog, Image, Comment, Reply, Profile
 from multiupload.fields import MultiFileField
 
 
@@ -98,4 +98,14 @@ class ReplyForm(forms.ModelForm):
         widgets = {
             'reply': forms.Textarea(attrs={'class': 'form-control', 'id': 'reply-text', 'rows': 3, 'cols': 15})
 
+        }
+
+
+class UpdateProfilePicForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('profile_pic',)
+
+        widgets = {
+            forms.FileInput(attrs={'class': 'form-control-file border'}),
         }

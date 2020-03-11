@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
+from django.urls import reverse_lazy
 from django.views import View
 from django.core.mail import send_mail
 import random
@@ -8,8 +9,11 @@ from .forms import SignUpForm, StoryAddForm, AddBlogForm, MultiUploadForm, AddCo
 from .models import Profile, Like, Comment, StoryView, Reply, Story, Blog, Image, Favourite
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView, UpdateView
 from django.db.models import F
+from .forms import UpdateProfilePicForm
+
+
 def home(request):
     return render(request, 'sayonestories/Home.html', context={})
 
@@ -25,7 +29,6 @@ class RegisterView(View):
         if form.is_valid():
             user = form.save()
 
-
             otp = random.randint(10000, 90000)
             email_body = f"""
                    Hi User,
@@ -37,7 +40,7 @@ class RegisterView(View):
                    Sincerely,
                    Sayonestories Team
                    """
-            Profile.objects.create(user=user,otp=otp)
+            Profile.objects.create(user=user, otp=otp)
             send_mail(
                 'Account verification Sayonestories',
                 email_body,
@@ -359,3 +362,38 @@ class UserFavourites(ListView):
         for item in favourite_list:
             story_list.append(item.story)
         return story_list
+
+
+class UserStories(ListView):
+    template_name = 'sayonestories/UserStories.html'
+    context_object_name = 'userstories'
+
+    def get_queryset(self):
+        return Story.objects.filter(user=self.request.user).filter(status=Story.PUBLISH)
+
+
+class UserProfilePage(DetailView):
+
+    def get(self, request, *args, **kwargs):
+        details = get_object_or_404(User, pk=kwargs['pk'])
+        story_obj = Story.objects.filter(user=self.request.user)
+        profile_obj = get_object_or_404(Profile, user=self.request.user)
+        context = {'profiledetails': details, 'count': story_obj.count, 'pic': profile_obj.profile_pic}
+        return render(request, 'sayonestories/UserProfile.html', context)
+
+
+class UserProfileUpdate(UpdateView):
+    model = User
+    template_name = 'sayonestories/UserProfileEdit.html'
+    fields = ('first_name','last_name')
+    success_url = reverse_lazy('userhome')
+
+    def get_context_data(self, **kwargs):
+
+        context = super(UserProfileUpdate, self).get_context_data(**kwargs)
+        context['form2'] = UpdateProfilePicForm()
+        return context
+
+
+
+

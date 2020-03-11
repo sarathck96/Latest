@@ -20,4 +20,7 @@ urlpatterns = [
     path('Gallery_List', views.GalleryList.as_view(), name='GalleryList'),
     path('All_Stories', views.AllStoriesList.as_view(), name='AllStoriesList'),
     path('User_Favourites', views.UserFavourites.as_view(), name='UserFavourites'),
+    path('User_Stories',views.UserStories.as_view(), name='UserStories'),
+    path('User_Profile/<int:pk>/', views.UserProfilePage.as_view(), name='UserProfile'),
+    path('User_Profile_Update/<int:pk>/', views.UserProfileUpdate.as_view() , name='ProfileUpdate'),
 ]
