@@ -8,8 +8,8 @@ from .forms import SignUpForm, StoryAddForm, AddBlogForm, MultiUploadForm, AddCo
 from .models import Profile, Like, Comment, StoryView, Reply, Story, Blog, Image, Favourite
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
-
-
+from django.views.generic import ListView
+from django.db.models import F
 def home(request):
     return render(request, 'sayonestories/Home.html', context={})
 
@@ -24,7 +24,7 @@ class RegisterView(View):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Profile.objects.create(user=user)
+
 
             otp = random.randint(10000, 90000)
             email_body = f"""
@@ -37,6 +37,7 @@ class RegisterView(View):
                    Sincerely,
                    Sayonestories Team
                    """
+            Profile.objects.create(user=user,otp=otp)
             send_mail(
                 'Account verification Sayonestories',
                 email_body,
@@ -302,7 +303,6 @@ def add_reply(request):
             temp_dict['reply'] = item.reply
             temp_dict['replied_by'] = item.user.get_full_name()
 
-
         print(temp_dict)
         return JsonResponse({'response': temp_dict, 'divid': comm_id}, safe=False)
     else:
@@ -322,3 +322,40 @@ def add_reply(request):
         temp_dict2['date_commented'] = comment_obj.created
 
         return JsonResponse({'response': temp_dict2, 'comment': 'com'})
+
+
+class BlogsList(ListView):
+    template_name = 'sayonestories/BlogList.html'
+    context_object_name = 'blog_list'
+    queryset = Story.objects.filter(stype=Story.BLOG, status=Story.PUBLISH)
+
+
+class EventList(ListView):
+    template_name = 'sayonestories/EventsList.html'
+    context_object_name = 'event_list'
+    queryset = Story.objects.filter(stype=Story.EVENT, status=Story.PUBLISH)
+
+
+class GalleryList(ListView):
+    template_name = 'sayonestories/GalleryList.html'
+    context_object_name = 'gallery_list'
+    queryset = Story.objects.filter(stype=Story.GALLERY, status=Story.PUBLISH)
+
+
+class AllStoriesList(ListView):
+    template_name = 'sayonestories/AllStories.html'
+    context_object_name = 'stories'
+    queryset = Story.objects.filter(status=Story.PUBLISH)
+    paginate_by = 2
+
+
+class UserFavourites(ListView):
+    template_name = 'sayonestories/UserFavourites.html'
+    context_object_name = 'favourites'
+
+    def get_queryset(self):
+        story_list = []
+        favourite_list = Favourite.objects.filter(user=self.request.user)
+        for item in favourite_list:
+            story_list.append(item.story)
+        return story_list

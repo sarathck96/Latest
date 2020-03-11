@@ -36,7 +36,7 @@
 
                <!-- Brand/logo -->
 
-               <a class="navbar-brand" href="">
+               <a class="navbar-brand" href="{% url 'userhome' %}">
 
                   <img src="{% static 'images/sayone.png' %}" alt="Sayone" class="rounded-sm" >
 
@@ -47,15 +47,15 @@
 
 
       <li class="nav-item">
-          <a class="nav-link lora" href="">Blogs</a>
+          <a class="nav-link lora" href="{% url 'BlogList' %}">Blogs</a>
       </li>
 
        <li class="nav-item">
-          <a class="nav-link lora" href="">Events</a>
+          <a class="nav-link lora" href="{% url 'EventList' %}">Events</a>
       </li>
 
        <li class="nav-item">
-          <a class="nav-link lora" href="">Gallery</a>
+          <a class="nav-link lora" href="{% url 'GalleryList' %}">Gallery</a>
       </li>
 
  <li class="nav-item">
@@ -63,7 +63,7 @@
                 </li>
 
  <li class="nav-item">
-                   <a class="nav-link lora" href="" >All Stories</a>
+                   <a class="nav-link lora" href="{% url 'AllStoriesList' %}" >All Stories</a>
                 </li>
   <li class="nav-item">
                    <a class="btn btn-success lora" href="{% url 'AddStoryView' %}" >Add Story</a>
@@ -91,7 +91,7 @@
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="">My profile</a>
                       <a class="dropdown-item" href="">My stories</a>
-                      <a class="dropdown-item" href="">My Favourites</a>
+                      <a class="dropdown-item" href="{% url 'UserFavourites' %}">My Favourites</a>
                       <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                     </div>
                   </li>

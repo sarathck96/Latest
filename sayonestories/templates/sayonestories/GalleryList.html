@@ -1,0 +1,71 @@
+
+{% extends 'base_layout2.html' %}
+{% load static %}
+
+
+
+{% block content %}
+
+<div class="container mb2">
+
+   <div class="row pt-4">
+
+<div class="col-md-12 text-center">
+    <h4>Gallery</h4>
+</div>
+       <div class="col-md-12">
+           {% for story in gallery_list %}
+
+           <div class="col-md-4" style="float:left;">
+                <div class="card mt-2" >
+
+                    <img src="{{story.image_story.first.file.url}}" width="100%" height="200px">
+
+
+
+                    <div class="card-body pb-3">
+                        <table ><tr ><a href="{% url 'Story_Detail_Page' story.id%}">{{story.title}}</a></tr>
+
+                        <tr class="mt-4">
+                            <td colspan="2" >
+                                {{ story.image_story.first.description|truncatewords:4|title}}
+                            </td>
+                        </tr>
+
+                        <tr class="mt-4">
+                            <td >
+                                No.of Pics:
+                            </td>
+
+                            <td>
+                                {{story.image_story.all.count}}
+                            </td>
+                        </tr>
+                            <tr><td>Author</td>
+                                <td>{{story.user.get_full_name|title}}</td></tr>
+                            <tr><td>Created on</td><td>{{story.created}}</td></tr>
+                            <tr><td>Story Type</td>
+                            <td>
+
+                                <span class="badge badge-warning">Image Gallery</span>
+
+                            </td>
+
+                            </tr>
+                        </table>
+                    </div>
+
+        </div>
+        </div>
+
+           {% endfor %}
+       </div>
+
+
+
+   </div>
+</div>
+
+
+
+{% endblock %}

@@ -48,7 +48,7 @@
                                     <td style="color:#ec412c;">{{ event.created |date:"d M Y" }}</td></tr>
                                     <tr>
                                     <td><img src="{{event.story_user.sayone_user.profile_pic.url}}" width="70px" height="70px;" class="rounded-circle"></td>
-                                    <td>{{event.blog_story.story_user.get_full_name}}</td>
+                                    <td>{{event.user.get_full_name}}</td>
                                 </tr>
                             </table>
                         </div>
@@ -76,7 +76,7 @@
 
             <div class="col-md-4" style="float:left;">
                     <div class="card mt-2">
-                            <img class="card-img-top"  src ="{{blog.blog_story.blog_pic.url}}" width="100%" height="220px;">
+                            <img class="card-img-top"  src ="{{blog.blog_story.pic.url}}" width="100%" height="220px;">
                             <div class="card-body">
                                 <table >
 
@@ -107,7 +107,7 @@
 
                                             <tr>
                                             <td><img src="{{blog.story_user.sayone_user.profile_pic.url}}" width="70px" height="70px;" class="rounded-circle"></td>
-                                            <td>{{blog.story_user.sayone_user.get_full_name}}</td>
+                                            <td>{{blog.user.get_full_name}}</td>
                                         </tr>
 
 
@@ -161,7 +161,7 @@
 
                                             <tr>
                                             <td><img src="{{blog.story_user.sayone_user.profile_pic.url}}" width="70px" height="70px;" class="rounded-circle"></td>
-                                            <td>{{blog.story_user.sayone_user.get_full_name}}</td>
+                                            <td>{{blog.user.get_full_name}}</td>
                                         </tr>
 
 

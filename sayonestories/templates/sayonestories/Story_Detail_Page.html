@@ -37,7 +37,7 @@
            </div>
            <div class="pt-2 ">
                <h3 class="dancingscript">Views:{{story.views}}</h3>
-               <h3 class="dancingscript text-right"></h3>
+               <h3 class="dancingscript text-right">{{story.user.get_full_name}}</h3>
               <h3 class="dancingscript text-right">{{story.created}}</h3>
 
 
@@ -160,7 +160,7 @@ x[slideIndex-1].style.display = "block";
    <script>
 var like = "{% static 'images/lovely.png' %}"
 var like2 = "{% static 'images/love4.png' %}"
-var counter = {{ story.story_likes }}
+var counter = {{ story.likes }}
 
 
  $(document).ready(function(){

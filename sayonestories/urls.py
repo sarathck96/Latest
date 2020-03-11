@@ -15,4 +15,9 @@ urlpatterns = [
     path('like_story/<int:story_id>/', views.like_story, name='like_story'),
     path('addfav/<int:story_id>/',views.add_to_fav,name='add_to_fav'),
     path('addreply',views.add_reply, name='add_reply'),
+    path('Blogs_List', views.BlogsList.as_view(), name='BlogList'),
+    path('Events_List', views.EventList.as_view(), name='EventList'),
+    path('Gallery_List', views.GalleryList.as_view(), name='GalleryList'),
+    path('All_Stories', views.AllStoriesList.as_view(), name='AllStoriesList'),
+    path('User_Favourites', views.UserFavourites.as_view(), name='UserFavourites'),
 ]
