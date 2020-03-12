@@ -3,6 +3,8 @@ import re
 
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.db.models import F, Q
 from django.http import HttpResponse, JsonResponse
@@ -80,7 +82,7 @@ class RegisterVerify(View):
         else:
             return render(request, 'sayonestories/Register_Confirm.html', context={'error': 'please check your code'})
 
-
+@login_required(login_url='/accounts/login/')
 def user_home_page(request):
     top_events = Story.objects.filter(stype=Story.EVENT).filter(status=Story.PUBLISH).order_by('-likes')[:3]
     top_blogs = Story.objects.filter(stype=Story.BLOG).filter(status=Story.PUBLISH).order_by('-likes')[:3]
@@ -136,7 +138,7 @@ def username_email_login(request):
                 return redirect('/accounts/login/')
 
 
-class AddStoryView(View):
+class AddStoryView(LoginRequiredMixin,View):
     form_class = StoryAddForm
     initial = {'key': 'value'}
     template_name = 'sayonestories/AddStory.html'
@@ -161,7 +163,7 @@ class AddStoryView(View):
         else:
             return render(request, self.template_name, {'form': form})
 
-
+@login_required(login_url='/accounts/login/')
 def addblog(request):
     story_id = request.POST.get('storyid')
     story_obj = get_object_or_404(Story, id=story_id)
@@ -178,7 +180,7 @@ def addblog(request):
     else:
         return render(request, 'sayonestories/AddStory.html', context={})
 
-
+@login_required(login_url='/accounts/login/')
 def addgallery(request):
     story_id = request.POST.get('storyid')
     story_obj = get_object_or_404(Story, id=story_id)
@@ -195,7 +197,7 @@ def addgallery(request):
         form = MultiUploadForm()
         return render(request, 'sayonestories/AddStory.html', context={'form2': form})
 
-
+@login_required(login_url='/accounts/login/')
 def story_detail_page(request, id):
     """loads all the details regarding the selected story .details include story title,author,date created and
     substory details .if substory is blog or event the details include title,image and description .if substory is
@@ -247,7 +249,7 @@ def record_view(request, story_id):
 
     return number_of_visits
 
-
+@login_required(login_url='/accounts/login/')
 def like_story(request, story_id):
     """ allows the user to like a story .checks whether the user have already liked the story .if already liked alerts
      the user that story is liked ,else increments the like count by one. story_id is unique id of story used to check
@@ -272,7 +274,7 @@ def like_story(request, story_id):
     data = {'is_valid': can_like}
     return JsonResponse(data)
 
-
+@login_required(login_url='/accounts/login/')
 def add_to_fav(request, story_id):
     print('call in fav')
     story_obj = Story.objects.get(id=story_id)
@@ -286,7 +288,7 @@ def add_to_fav(request, story_id):
 
         return JsonResponse({'added': 'no'})
 
-
+@login_required(login_url='/accounts/login/')
 def add_reply(request):
     if request.POST.get('action') == 'post':
         story_id = request.POST.get('story_id')
@@ -329,32 +331,32 @@ def add_reply(request):
         return JsonResponse({'response': temp_dict2, 'comment': 'com'})
 
 
-class BlogsList(ListView):
+class BlogsList(LoginRequiredMixin,ListView):
     template_name = 'sayonestories/BlogList.html'
     context_object_name = 'blog_list'
     queryset = Story.objects.filter(stype=Story.BLOG, status=Story.PUBLISH)
 
 
-class EventList(ListView):
+class EventList(LoginRequiredMixin,ListView):
     template_name = 'sayonestories/EventsList.html'
     context_object_name = 'event_list'
     queryset = Story.objects.filter(stype=Story.EVENT, status=Story.PUBLISH)
 
 
-class GalleryList(ListView):
+class GalleryList(LoginRequiredMixin,ListView):
     template_name = 'sayonestories/GalleryList.html'
     context_object_name = 'gallery_list'
     queryset = Story.objects.filter(stype=Story.GALLERY, status=Story.PUBLISH)
 
 
-class AllStoriesList(ListView):
+class AllStoriesList(LoginRequiredMixin,ListView):
     template_name = 'sayonestories/AllStories.html'
     context_object_name = 'stories'
     queryset = Story.objects.filter(status=Story.PUBLISH)
     paginate_by = 2
 
 
-class UserFavourites(ListView):
+class UserFavourites(LoginRequiredMixin,ListView):
     template_name = 'sayonestories/UserFavourites.html'
     context_object_name = 'favourites'
 
@@ -366,7 +368,7 @@ class UserFavourites(ListView):
         return story_list
 
 
-class UserStories(ListView):
+class UserStories(LoginRequiredMixin,ListView):
     template_name = 'sayonestories/UserStories.html'
     context_object_name = 'userstories'
 
@@ -374,7 +376,7 @@ class UserStories(ListView):
         return Story.objects.filter(user=self.request.user).filter(status=Story.PUBLISH)
 
 
-class UserProfilePage(DetailView):
+class UserProfilePage(LoginRequiredMixin,DetailView):
 
     def get(self, request, *args, **kwargs):
         details = get_object_or_404(User, pk=kwargs['pk'])
@@ -385,7 +387,7 @@ class UserProfilePage(DetailView):
         return render(request, 'sayonestories/UserProfile.html', context)
 
 
-class UserProfileUpdate(UpdateView):
+class UserProfileUpdate(LoginRequiredMixin,UpdateView):
     model = User
     template_name = 'sayonestories/UserProfileEdit.html'
     fields = ('first_name', 'last_name')
@@ -405,7 +407,7 @@ def story_detail_page2(request, id):
         context1 = {'substory': sub_story_object, 'story': story_obj, 'comments': comments}
         return render(request, 'sayonestories/story_detail_page2.html', context=context1)
 
-
+@login_required(login_url='/accounts/login/')
 def top_authors(request):
     users_and_like = []
     all_users = User.objects.all()
@@ -430,7 +432,7 @@ def top_authors(request):
 
     return render(request, 'sayonestories/Top_Authors.html', context={'authors': top_authors})
 
-
+@login_required(login_url='/accounts/login/')
 def filter(request):
     param = request.POST.get('filterparam')
 
@@ -447,12 +449,12 @@ def filter(request):
     return render(request, 'sayonestories/FilteredResults.html', context)
 
 
-class DeleteStory(DeleteView):
+class DeleteStory(LoginRequiredMixin,DeleteView):
     model = Story
     template_name = 'sayonestories/Delete_Story_Confirm.html'
     success_url = reverse_lazy('UserStories')
 
-
+@login_required(login_url='/accounts/login/')
 def edit_story_page(request, id):
     story_obj = Story.objects.get(id=id)
     story_type = story_obj.stype
@@ -470,7 +472,7 @@ def edit_story_page(request, id):
         context = {'title': story_title, 'id': story_obj.id, 'story': story_obj, 'form': form}
         return render(request, 'sayonestories/Story_Edit_Page.html', context)
 
-
+@login_required(login_url='/accounts/login/')
 def edit_story(request):
     story_id = request.POST.get('id')
 
@@ -505,7 +507,7 @@ def edit_story(request):
     else:
         return redirect('Story_Detail_Page', id=story_id)
 
-
+@login_required(login_url='/accounts/login/')
 def updategallery(request, story_id):
     story_id = story_id
     story_obj = Story.objects.filter(id=story_id)[0]
@@ -522,7 +524,7 @@ def updategallery(request, story_id):
         context = {'title': story_obj.title, 'id': story_obj.id, 'story': story_obj,'form':form}
         return render(request, 'sayonestories/story_edit_page.html', context)
 
-
+@login_required(login_url='/accounts/login/')
 def update_profile_pic(request):
     error_message = ''
     profile_pic = request.FILES.get('pic')
