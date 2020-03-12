@@ -1,11 +1,10 @@
-
 {% extends 'base_layout2.html' %}
 {% load static %}
 
 
 {% block content %}
 
-<div class="container mb3" >
+<div class="container mb3">
     <div class="row">
 
 
@@ -18,25 +17,33 @@
                     <td>Story title :</td>
                     <td>{{story.title |title }}</td>
                 </tr>
-            <tr>
-                <td>
-            Story type :</td><td>{% if story.stype == 0 %} Event
+                <tr>
+                    <td>
+                        Story type :
+                    </td>
+                    <td>{% if story.stype == 0 %} Event
                         {% elif story.stype == 1 %}Blog
                         {% elif story.stype == 2 %} Pic Gallery
-                        {% endif %}</td>
-                        </tr>
-                        <tr>
-                            <td>
-            Date created:</td><td>{{ story.created }}</td>
-            </tr>
-            <tr><td>Author</td> <td>{{story.user.get_full_name |title }}</td></tr>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Date created:
+                    </td>
+                    <td>{{ story.created }}</td>
+                </tr>
+                <tr>
+                    <td>Author</td>
+                    <td>{{story.user.get_full_name |title }}</td>
+                </tr>
             </table>
 
             {% endif %}
             {% if form %}
             <form method="POST" action="{% url 'AddStoryView' %}" class="crimson mt-4">
                 {% csrf_token %}
-            {{form}}
+                {{form}}
                 <button type="submit" class="btn btn-warning mt-4 " id="add">Add</button>
             </form>
             {% endif %}
@@ -48,30 +55,30 @@
                 {% if story %}
                 <input type="hidden" value="{{story.id}}" name="storyid">
                 {% endif %}
-            {{form1}}
+                {{form1}}
                 <button type="submit" class="btn btn-warning mt-4 " id="blog">Add</button>
             </form>
             {% endif %}
 
 
             {% if form2 %}
-                <form method="POST" action="{% url 'Add_Gallery' %}" enctype="multipart/form-data">
-                    {% csrf_token %}
- {% if story %}
+            <form method="POST" action="{% url 'Add_Gallery' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if story %}
                 <input type="hidden" value="{{story.id}}" name="storyid">
                 {% endif %}
-                    {{ form2 }}
-                    <button type="submit" class="btn btn-warning mt-4" id="images">Add</button>
+                {{ form2 }}
+                <button type="submit" class="btn btn-warning mt-4" id="images">Add</button>
 
 
-                </form>
+            </form>
 
 
             {% endif %}
         </div>
 
         <div class="col-3"></div>
-        </div>
+    </div>
 
 </div>
 

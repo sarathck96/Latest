@@ -9,31 +9,52 @@
     <div class="row mt-4">
         <div class="col-4"></div>
         <div class="col-4 mt-4 rounded-sm ">
-         <div class="card">
+            <div class="card">
                 <img class="card-img-top" src="{{pic.url}}" alt="Card image" height="200px">
 
 
                 <div class="card-body">
+                    {% if error %}
+                    {{ error }}
+                    {% endif %}
                     <table>
                         <tr>
-                        <h3 class="card-title">{{profiledetails.get_full_name}}</h4></tr>
-                       <tr><td>Username:</td><td>{{profiledetails.username}}</td></tr>
-                       <tr><td>Email ID:</td><td>{{profiledetails.email}}</td></tr>
-                        <tr><td>Stories:</td><td>{{count}}</td></tr>
+                            <h3 class="card-title">{{profiledetails.get_full_name}}</h4></tr>
                         <tr>
-                       <a href="{% url 'ProfileUpdate' user.id %}" class="btn btn-primary">Edit profile</a>
-                       </tr>
-                        </table>
-                      </div>
+                            <td>Username:</td>
+                            <td>{{profiledetails.username}}</td>
+                        </tr>
+                        <tr>
+                            <td>Email ID:</td>
+                            <td>{{profiledetails.email}}</td>
+                        </tr>
+                        <tr>
+                            <td>Stories:</td>
+                            <td>{{count}}</td>
+                        </tr>
+                        <tr>
+
+                            <form method="POST" action="{% url 'UpdateProfilePic' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <div class="file  mt-2">
+                                    Change
+                                    <input type="file" name="pic"/>
+                                </div>
+                                <button class="btn-warning btn btn-sm mt-2" type="submit"><b>save</b></button>
+                            </form>
+
+                        </tr>
+                        <tr>
+                            <a href="{% url 'ProfileUpdate' user.id %}" class="btn btn-primary">Edit profile</a>
+                        </tr>
+                    </table>
+                </div>
 
 
-
-</div>
+            </div>
 
         </div>
-
-
-
 
 
         <div class="col-4"></div>

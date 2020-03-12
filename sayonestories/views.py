@@ -4,15 +4,15 @@ import re
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.db.models import F
+from django.db.models import F, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView, DeleteView
 
 from .forms import (AddBlogForm, AddCommentForm, MultiUploadForm, ReplyForm,
-                    SignUpForm, StoryAddForm, UpdateProfilePicForm)
+                    SignUpForm, StoryAddForm, UpdateProfilePicForm, MultiUploadForm2)
 from .models import (Blog, Comment, Favourite, Image, Like, Profile, Reply,
                      Story, StoryView)
 
@@ -288,20 +288,15 @@ def add_to_fav(request, story_id):
 
 
 def add_reply(request):
-    print('call here...........///////////')
-
     if request.POST.get('action') == 'post':
         story_id = request.POST.get('story_id')
         comm_id = request.POST.get('comment_id')
         reply_text = request.POST.get('reply_text')
         story_id2 = request.POST.get('story_id2')
-    print('id2', story_id2)
+
     if story_id2 is None:
-        print('reply section')
+
         story_obj = Story.objects.filter(id=story_id)[0]
-        print('storyid', story_id)
-        print('commentid', comm_id)
-        print('replytext', reply_text)
 
         comment_obj = Comment.objects.filter(id=comm_id)[0]
         user_replied = request.user
@@ -314,7 +309,6 @@ def add_reply(request):
             temp_dict['reply'] = item.reply
             temp_dict['replied_by'] = item.user.get_full_name()
 
-        print(temp_dict)
         return JsonResponse({'response': temp_dict, 'divid': comm_id}, safe=False)
     else:
         print('comment section')
@@ -397,9 +391,6 @@ class UserProfileUpdate(UpdateView):
     fields = ('first_name', 'last_name')
     success_url = reverse_lazy('userhome')
 
-    def get_context_data(self, **kwargs):
-        context = super(UserProfileUpdate, self).get_context_data(**kwargs)
-
 
 def story_detail_page2(request, id):
     story_obj = get_object_or_404(Story, id=id)
@@ -454,3 +445,92 @@ def filter(request):
         context = {'stories': results2}
 
     return render(request, 'sayonestories/FilteredResults.html', context)
+
+
+class DeleteStory(DeleteView):
+    model = Story
+    template_name = 'sayonestories/Delete_Story_Confirm.html'
+    success_url = reverse_lazy('UserStories')
+
+
+def edit_story_page(request, id):
+    story_obj = Story.objects.get(id=id)
+    story_type = story_obj.stype
+    story_title = story_obj.title
+
+    if story_type in [Story.EVENT, Story.BLOG]:
+
+        context = {'blog': 'blog', 'title': story_title, 'description': story_obj.blog_story.description,
+                   'pic': story_obj.blog_story.pic, 'id': story_obj.id}
+        return render(request, 'sayonestories/Story_Edit_Page.html', context)
+
+    else:
+
+        form = MultiUploadForm2()
+        context = {'title': story_title, 'id': story_obj.id, 'story': story_obj, 'form': form}
+        return render(request, 'sayonestories/Story_Edit_Page.html', context)
+
+
+def edit_story(request):
+    story_id = request.POST.get('id')
+
+    story_title = request.POST.get('title')
+    story_description = request.POST.get('description')
+    story_description2 = request.POST.get('description2')
+
+    if not story_description2 == None:
+        story = Story.objects.filter(id=story_id).first()
+        image_story = Image.objects.filter(story=story).first()
+        image_story.description = story_description2
+        image_story.save()
+
+    pic = ''
+    if request.FILES.get('newpic'):
+        story_pic = request.FILES.get('newpic')
+        pic = 'yes'
+    else:
+        pic = 'no'
+
+    story_obj = Story.objects.filter(id=story_id).first()
+    story_obj.title = story_title
+    story_obj.save()
+
+    if story_obj.stype in [Story.EVENT, Story.BLOG]:
+        blog_obj = Blog.objects.filter(story=story_obj).first()
+        blog_objdescription = story_description
+        if pic == 'yes':
+            blog_obj.pic = story_pic
+        blog_obj.save()
+        return redirect('Story_Detail_Page', id=story_id)
+    else:
+        return redirect('Story_Detail_Page', id=story_id)
+
+
+def updategallery(request, story_id):
+    story_id = story_id
+    story_obj = Story.objects.filter(id=story_id)[0]
+    if request.method == 'POST':
+        form2 = MultiUploadForm2()
+
+        form = MultiUploadForm2(request.POST, request.FILES)
+        if form.is_valid():
+            for each in form.cleaned_data['file']:
+                Image.objects.create(file=each, story=story_obj)
+        context = {'title': story_obj.title, 'id': story_obj.id, 'story': story_obj, 'form': form2}
+        return render(request, 'sayonestories/Story_Edit_Page.html', context)
+    else:
+        context = {'title': story_obj.title, 'id': story_obj.id, 'story': story_obj,'form':form}
+        return render(request, 'sayonestories/story_edit_page.html', context)
+
+
+def update_profile_pic(request):
+    error_message = ''
+    profile_pic = request.FILES.get('pic')
+    if profile_pic == None:
+        error_message = 'please select an image'
+        return render(request,'sayonestories/UserProfile.html',context={'error':error_message})
+    else:
+        obj = Profile.objects.get(user=request.user)
+        obj.profile_pic = profile_pic
+        obj.save()
+        return redirect('UserProfile',pk=request.user.id)

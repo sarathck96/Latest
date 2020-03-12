@@ -72,3 +72,17 @@ class ImagesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Image, ImagesAdmin)
+
+
+class ReplyAdmin(admin.ModelAdmin):
+    list_display = ['reply', 'comment', 'user']
+
+
+admin.site.register(Reply, ReplyAdmin)
+
+
+class FavouriteAdmin(admin.ModelAdmin):
+    list_display = ['user', 'story']
+
+
+admin.site.register(Favourite, FavouriteAdmin)

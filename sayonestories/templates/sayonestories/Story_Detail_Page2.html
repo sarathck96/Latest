@@ -2,11 +2,10 @@
 {% load static %}
 
 
-
 {% block content %}
 
 
-<div class="container mb2" >
+<div class="container mb2">
 
 
     <div class="row">
@@ -50,12 +49,11 @@
             {% for comment in comments %}
             <div class="container border mt-2">
                 <div class="mt-4 alert alert-dark" style="white-space:pre-wrap;">
-                <p>{{ comment.comment }}</p>
-                <p class="text-right"> -{{ comment.user.get_full_name}} {{comment.created}}</p>
-            </div>
+                    <p>{{ comment.comment }}</p>
+                    <p class="text-right"> -{{ comment.user.get_full_name}} {{comment.created}}</p>
+                </div>
             </div>
             {% endfor %}
-
 
 
         </div>
@@ -73,7 +71,6 @@
 
 
         </div>
-
 
 
     </div>
@@ -98,9 +95,10 @@ function showDivs(n) {
   x[slideIndex-1].style.display = "block";
 }
 
+
     </script>
 
 
 </div>
-    {% endblock %}
+{% endblock %}
 

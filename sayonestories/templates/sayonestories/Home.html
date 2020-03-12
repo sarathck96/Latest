@@ -6,12 +6,9 @@
 <div class="container mb2">
 
 
-
-
-
     <div class="row">
         <div class="col-12 my-5 text-center">
-        <h4>Welcome to Sayone Stories . Start Sharing</h4>
+            <h4>Welcome to Sayone Stories . Start Sharing</h4>
 
         </div>
     </div>
@@ -21,10 +18,10 @@
 
             <div class="card">
                 <a href="{% url 'login' %}">
-                <img class="card-img-top" src="{% static 'images/event.JPG' %}" alt="Card image"
-                     style="width:100%;height:230px;"></a>
+                    <img class="card-img-top" src="{% static 'images/event.JPG' %}" alt="Card image"
+                         style="width:100%;height:230px;"></a>
                 <div class="card-body">
-                   <a href="{% url 'login' %}"> <h5 class="card-title">Events</h5></a>
+                    <a href="{% url 'login' %}"><h5 class="card-title">Events</h5></a>
                     <p class="card-text">Share Details of the Events Outside</p>
 
                 </div>
@@ -35,13 +32,13 @@
 
         <div class="col-4">
 
-            <div class="card" >
+            <div class="card">
                 <a href="{% url 'login' %}">
-                <img class="card-img-top" src="{% static 'images/technology.jpeg' %}" alt="Card image"
-                     style="width:100%;height:230px;">
-                     </a>
+                    <img class="card-img-top" src="{% static 'images/technology.jpeg' %}" alt="Card image"
+                         style="width:100%;height:230px;">
+                </a>
                 <div class="card-body">
-                   <a href="{% url 'login' %}"> <h5 class="card-title">Technology Blogs</h5></a>
+                    <a href="{% url 'login' %}"><h5 class="card-title">Technology Blogs</h5></a>
                     <p class="card-text">Share your knowledge </p>
 
                 </div>
@@ -51,12 +48,13 @@
 
         </div>
         <div class="col-4">
-            <div class="card" >
+            <div class="card">
                 <a href="{% url 'login' %}">
-                <img class="card-img-top" src="{% static 'images/holiday.jpg' %}" alt="Card image" style="width:100%;height:230px;">
+                    <img class="card-img-top" src="{% static 'images/holiday.jpg' %}" alt="Card image"
+                         style="width:100%;height:230px;">
                 </a>
                 <div class="card-body">
-                 <a href="{% url 'login' %}"><h5 class="card-title">Holiday pics</h5></a>
+                    <a href="{% url 'login' %}"><h5 class="card-title">Holiday pics</h5></a>
                     <p class="card-text">Share your Holiday pics</p>
 
                 </div>
@@ -65,184 +63,181 @@
 
         </div>
     </div>
-<br>
-<hr>
-  <div class="row mt-2">
+    <br>
+    <hr>
+    <div class="row mt-2">
         <div class="col-md-12 text-center mt-4">
-             <h3 class="lora">Top Events</h3></center>
+            <h3 class="lora">Top Events</h3></center>
         </div>
 
         <div class="col-md-12 mt-4">
-        {% for event in events %}
-        <div class="col-md-4 rounded-sm " style="float:left;">
+            {% for event in events %}
+            <div class="col-md-4 rounded-sm " style="float:left;">
                 <div class="card mt-2">
-                    <img class="card-img-top"  src ="{{event.blog_story.pic.url}}" width="100%" height="220px;">
-                        <div class="card-body">
+                    <img class="card-img-top" src="{{event.blog_story.pic.url}}" width="100%" height="220px;">
+                    <div class="card-body">
 
-                            <table >
-                                <tr>
-                                    <div style="height:70px;">
-                                            <a href="{% url 'StoryDetail2' event.id %}">{{event.title|title}}</a>
-                                        </div>
-                               </tr>
+                        <table>
+                            <tr>
+                                <div style="height:70px;">
+                                    <a href="{% url 'StoryDetail2' event.id %}">{{event.title|title}}</a>
+                                </div>
+                            </tr>
 
-                               <tr>
-                                   <td colspan="2">
-                                       {{event.blog_story.description | truncatewords:4 }}
-                                   </td>
-                               </tr>
+                            <tr>
+                                <td colspan="2">
+                                    {{event.blog_story.description | truncatewords:4 }}
+                                </td>
+                            </tr>
 
-                                <tr><td>Story Type</td>
+                            <tr>
+                                <td>Story Type</td>
                                 <td>
 
                                     <span class="badge badge-success">Event</span>
 
                                 </td>
 
-                                </tr>
-                                <tr>
-                                    <td style="color:#ec412c;">{{ event.created |date:"d M Y" }}</td></tr>
-                                    <tr>
-                                    <td><img src="{{event.user.sayone_user.profile_pic.url}}" width="70px" height="70px;" class="rounded-circle"></td>
-                                    <td>{{event.user.get_full_name}}</td>
-                                </tr>
-                            </table>
-                        </div>
-         </div>
+                            </tr>
+                            <tr>
+                                <td style="color:#ec412c;">{{ event.created |date:"d M Y" }}</td>
+                            </tr>
+                            <tr>
+                                <td><img src="{{event.user.sayone_user.profile_pic.url}}" width="70px" height="70px;"
+                                         class="rounded-circle"></td>
+                                <td>{{event.user.get_full_name}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-</div>
     </div>
 
 
-<br>
-<hr>
-        <div class="row mt-2">
+    <br>
+    <hr>
+    <div class="row mt-2">
 
         <div class="col-md-12 text-center mt-4">
             <h3 class="lora">Top Blogs</h3>
         </div>
 
-            <div class="col-md-12 mt-4">
+        <div class="col-md-12 mt-4">
             {% for blog in blogs %}
             <div class="col-md-4" style="float:left;">
-                    <div class="card mt-2">
-                            <img class="card-img-top"  src ="{{blog.blog_story.pic.url}}" width="100%" height="220px;">
-                            <div class="card-body">
-                                <table >
+                <div class="card mt-2">
+                    <img class="card-img-top" src="{{blog.blog_story.pic.url}}" width="100%" height="220px;">
+                    <div class="card-body">
+                        <table>
 
 
-                                            <tr>  <div style="height:70px;">
-                                                <a href="{% url 'StoryDetail2' blog.id %}">{{blog.title|title}}</a>
-                                            </div>
-                                            </tr>
+                            <tr>
+                                <div style="height:70px;">
+                                    <a href="{% url 'StoryDetail2' blog.id %}">{{blog.title|title}}</a>
+                                </div>
+                            </tr>
 
 
+                            <tr>
+                                <td>Story Type</td>
+                                <td>
+
+                                    <span class="badge badge-info">Blog</span>
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td style="color:#ec412c;">{{ blog.created |date:"d M Y" }}</td>
+                            </tr>
+
+                            <tr>
+                                <td><img src="{{blog.user.sayone_user.profile_pic.url}}" width="70px" height="70px;"
+                                         class="rounded-circle"></td>
+                                <td>{{blog.user.sayone_user.name}}</td>
+                            </tr>
 
 
-                                    <tr><td>Story Type</td>
-                                    <td>
-
-                                        <span class="badge badge-info">Blog</span>
-
-                                    </td>
-
-                                    </tr>
-
-                                    <tr>
-                                            <td style="color:#ec412c;">{{ blog.created |date:"d M Y" }}</td></tr>
-
-                                            <tr>
-                                            <td><img src="{{blog.user.sayone_user.profile_pic.url}}" width="70px" height="70px;" class="rounded-circle"></td>
-                                            <td>{{blog.user.sayone_user.name}}</td>
-                                        </tr>
-
-
-                                </table>
-                            </div>
-             </div>
+                        </table>
+                    </div>
+                </div>
             </div>
             {% endfor %}
+        </div>
     </div>
+
+    <br>
+    <hr>
+
+    <div class="row mt-2">
+
+        <div class="col-md-12 text-center mt-4">
+            <h3 class="lora">Top Gallery</h3>
         </div>
 
-            <br>
-<hr>
-
-        <div class="row mt-2">
-
-            <div class="col-md-12 text-center mt-4">
-                 <h3 class="lora">Top Gallery</h3>
-            </div>
-
-            <div class="col-md-12 mt-4">
+        <div class="col-md-12 mt-4">
             {% for blog in gallery %}
             <div class="col-md-4" style="float:left;">
-                    <div class="card mt-2">
-                            <img class="card-img-top"  src ="{{blog.image_story.first.file.url}}" width="100%" height="220px;">
-                            <div class="card-body">
-                                <table >
+                <div class="card mt-2">
+                    <img class="card-img-top" src="{{blog.image_story.first.file.url}}" width="100%" height="220px;">
+                    <div class="card-body">
+                        <table>
 
 
-                                            <tr>  <div style="height:70px;">
-                                                <a href="{% url 'StoryDetail2' blog.id %}">{{blog.title|title}}</a>
-                                            </div>
-                                            </tr>
+                            <tr>
+                                <div style="height:70px;">
+                                    <a href="{% url 'StoryDetail2' blog.id %}">{{blog.title|title}}</a>
+                                </div>
+                            </tr>
 
-                                        <tr>
-                                            <td colspan ="2">
-                                                {{blog.image_story.first.description |truncatewords:4 }}
-                                            </td>
-                                        </tr>
+                            <tr>
+                                <td colspan="2">
+                                    {{blog.image_story.first.description |truncatewords:4 }}
+                                </td>
+                            </tr>
 
-                                        <tr>
-                                            <td>
-                                                No.of Pics:
-                                            </td>
-                                            <td>
+                            <tr>
+                                <td>
+                                    No.of Pics:
+                                </td>
+                                <td>
 
-                                                {{blog.image_story.all.count}}
-                                            </td>
-                                        </tr>
-
-
-                                    <tr><td>Story Type</td>
-                                    <td>
-
-                                        <span class="badge badge-warning">Image Gallery</span>
-
-                                    </td>
-
-                                    </tr>
-
-                                    <tr>
-                                            <td style="color:#ec412c;">{{ blog.created |date:"d M Y" }}</td></tr>
-
-                                            <tr>
-                                            <td><img src="{{blog.user.sayone_user.profile_pic.url}}" width="70px" height="70px;" class="rounded-circle"></td>
-                                            <td>{{blog.user.get_full_name}}</td>
-                                        </tr>
+                                    {{blog.image_story.all.count}}
+                                </td>
+                            </tr>
 
 
-                                </table>
-                            </div>
-             </div>
+                            <tr>
+                                <td>Story Type</td>
+                                <td>
+
+                                    <span class="badge badge-warning">Image Gallery</span>
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td style="color:#ec412c;">{{ blog.created |date:"d M Y" }}</td>
+                            </tr>
+
+                            <tr>
+                                <td><img src="{{blog.user.sayone_user.profile_pic.url}}" width="70px" height="70px;"
+                                         class="rounded-circle"></td>
+                                <td>{{blog.user.get_full_name}}</td>
+                            </tr>
+
+
+                        </table>
+                    </div>
+                </div>
             </div>
             {% endfor %}
-    </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
+    </div>
 
 
 </div>

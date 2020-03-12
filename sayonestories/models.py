@@ -36,6 +36,9 @@ class Profile(models.Model):
     class Meta:
         verbose_name_plural = 'Profile'
 
+    def __str__(self):
+        return self.user.username
+
 
 class Story(DateModel):
     """
@@ -72,6 +75,9 @@ class Story(DateModel):
     class Meta:
         verbose_name_plural = 'Story'
 
+    def __str__(self):
+        return self.title
+
 
 class Blog(models.Model):
     """
@@ -85,6 +91,9 @@ class Blog(models.Model):
 
     class Meta:
         verbose_name_plural = 'Blog'
+
+    def __str__(self):
+        return self.story.title
 
 
 class Image(models.Model):
@@ -101,6 +110,9 @@ class Image(models.Model):
     class Meta:
         verbose_name_plural = 'Image Gallery'
 
+    def __str__(self):
+        return self.story.title
+
 
 class Like(DateModel):
     """
@@ -112,6 +124,9 @@ class Like(DateModel):
 
     class Meta:
         verbose_name_plural = 'Like'
+
+    def __str__(self):
+        return self.user.username
 
 
 class Comment(DateModel):
@@ -125,6 +140,9 @@ class Comment(DateModel):
 
     class Meta:
         verbose_name_plural = 'Comment'
+
+    def __str__(self):
+        return self.comment
 
 
 class StoryView(DateModel):
@@ -149,6 +167,9 @@ class Reply(DateModel):
     class Meta:
         verbose_name_plural = 'Reply'
 
+    def __str__(self):
+        return self.reply
+
 
 class Favourite(models.Model):
     """
@@ -160,3 +181,6 @@ class Favourite(models.Model):
 
     class Meta:
         verbose_name_plural = 'Favourite'
+
+    def __str__(self):
+        return self.story.title

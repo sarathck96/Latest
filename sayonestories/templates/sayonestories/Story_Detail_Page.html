@@ -8,134 +8,135 @@
 <div class="container mb2">
 
 
-   <div class="row" >
-       <div class="col-2 ">
+    <div class="row">
+        <div class="col-2 ">
 
-       </div>
-       <div class="col-8 pt-5 " id="detaildiv">
+        </div>
+        <div class="col-8 pt-5 " id="detaildiv">
 
-           <div class="card">
-               <div class="card-body heading2 bg-warning">{{ story.title}}</div>
-           </div>
-           <div class="card pt-4">
-               {% if blog %}
-               <img height="400px" src="{{story.blog_story.pic.url}}" width="100%">
-               {% endif %}
+            <div class="card">
+                <div class="card-body heading2 bg-warning">{{ story.title}}</div>
+            </div>
+            <div class="card pt-4">
+                {% if blog %}
+                <img height="400px" src="{{story.blog_story.pic.url}}" width="100%">
+                {% endif %}
 
-               {% if substory %}
+                {% if substory %}
 
-               <div class="w3-content w3-display-container">
-                   {% for item in substory %}
-                   <img class="mySlides" height="400px" src="{{ item.file.url }}" style="width:100%">
-                   {% endfor %}
-                {{substory.first.description}}
-                   <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
-                   <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
-               </div>
-               {% endif %}
+                <div class="w3-content w3-display-container">
+                    {% for item in substory %}
+                    <img class="mySlides" height="400px" src="{{ item.file.url }}" style="width:100%">
+                    {% endfor %}
+                    {{substory.first.description}}
+                    <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+                    <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
+                </div>
+                {% endif %}
 
-           </div>
-           <div class="pt-2 ">
-               <h3 class="dancingscript">Views:{{story.views}}</h3>
-               <h3 class="dancingscript text-right">{{story.user.get_full_name}}</h3>
-              <h3 class="dancingscript text-right">{{story.created}}</h3>
-
-
-           </div>
-
-           <div class="p-2 mt-2 crimson" style="white-space:pre-wrap;">
-               {{story.blog_story.description}}
-           </div>
-
-<div id="commentsdiv">
-           {% for comment in comments %}
-           <div class="container border mt-2">
-               <div class="mt-4 alert alert-dark" style="overflow-wrap: break-word;">
-                   <p> {{ comment.comment }} </p>
-                   <p class="text-right text-primary">
+            </div>
+            <div class="pt-2 ">
+                <h3 class="dancingscript">Views:{{story.views}}</h3>
+                <h3 class="dancingscript text-right">{{story.user.get_full_name}}</h3>
+                <h3 class="dancingscript text-right">{{story.created}}</h3>
 
 
-                       {{comment.created}}
- </p>
-                   <!--                    <input id="btnPassport" name="btnPassport" type="button" value="reply"/>-->
+            </div>
+
+            <div class="p-2 mt-2 crimson" style="white-space:pre-wrap;">
+                {{story.blog_story.description}}
+            </div>
+
+            <div id="commentsdiv">
+                {% for comment in comments %}
+                <div class="container border mt-2">
+                    <div class="mt-4 alert alert-dark" style="overflow-wrap: break-word;">
+                        <p> {{ comment.comment }} </p>
+                        <p class="text-right text-primary">
 
 
-               </div>
-               <input class="showSingle btn btn-sm btn-primary" target="{{comment.id}}" type="button" value="Reply">
-
-               <div id="div{{comment.id}}" class="targetDiv">
-
-                   <form class="thereplyform{{comment.id}}">
-                       {% csrf_token %}
-                       <input name="id" type="hidden" value="{{comment.id}}" id="comment">
-                       <input name="story_id" type="hidden" value="{{story.id}}" id="story">
-                       {{form2}}
-                       <button class="btn btn-sm btn-primary mt-2" type="submit" id="replybtn">Reply</button>
-                   </form>
+                            {{comment.created}}
+                        </p>
+                        <!--                    <input id="btnPassport" name="btnPassport" type="button" value="reply"/>-->
 
 
-               </div>
+                    </div>
+                    <input class="showSingle btn btn-sm btn-primary" target="{{comment.id}}" type="button"
+                           value="Reply">
 
-               <br>
+                    <div id="div{{comment.id}}" class="targetDiv">
 
-<div id="reply{{comment.id}}">
-
-               {% for reply in comment.reply_to_comment.all %}
-               <div class="offset-md-2 alert alert-secondary" id="replies">
-                   <h6 class="text-primary"> {{reply.user.get_full_name}} -> {{reply.user.get_full_name}}
-                       {{reply.created | timesince}} ago</h6>
-
-                   <h6>{{reply.reply}} </h6>
-               </div>
-               {% endfor %}
-</div>
-
-           </div>
-           {% endfor %}
-</div>
-
-           <div>
-               <form id="commentform" name="geek" >
-                   <input type="hidden" name="storyid2" value="{{story.id}}">
-                   {% csrf_token %}
-                   {{ form }}
-                   <button class="btn btn-sm btn-warning mt-2" name="comment" type="submit">Add comment</button>
-               </form>
-           </div>
+                        <form class="thereplyform{{comment.id}}">
+                            {% csrf_token %}
+                            <input name="id" type="hidden" value="{{comment.id}}" id="comment">
+                            <input name="story_id" type="hidden" value="{{story.id}}" id="story">
+                            {{form2}}
+                            <button class="btn btn-sm btn-primary mt-2" type="submit" id="replybtn">Reply</button>
+                        </form>
 
 
-       </div>
+                    </div>
+
+                    <br>
+
+                    <div id="reply{{comment.id}}">
+
+                        {% for reply in comment.reply_to_comment.all %}
+                        <div class="offset-md-2 alert alert-secondary" id="replies">
+                            <h6 class="text-primary"> {{reply.user.get_full_name}} -> {{reply.user.get_full_name}}
+                                {{reply.created | timesince}} ago</h6>
+
+                            <h6>{{reply.reply}} </h6>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+
+            <div>
+                <form id="commentform" name="geek">
+                    <input type="hidden" name="storyid2" value="{{story.id}}">
+                    {% csrf_token %}
+                    {{ form }}
+                    <button class="btn btn-sm btn-warning mt-2" name="comment" type="submit">Add comment</button>
+                </form>
+            </div>
 
 
-       <div class="col-2 my-auto " id="likefav">
+        </div>
 
-           <div>
-               {% if liked == 'own' %}
-               <img height="50px" id="like" src="{% static 'images/love4.png' %}" width="50px">
 
-               {% elif liked == 'no' %}
+        <div class="col-2 my-auto " id="likefav">
 
-               <img height="50px" id="like" src="{% static 'images/love4.png' %}" width="50px">
-               {% else %}
-               <img height="50px" id="like" src="{% static 'images/lovely.png' %}" width="50px">
-               {% endif %}
-               <div id="counter"><b>{{story.likes}}</b></div>
-           </div>
-           <br>
-           <div  >
-               <img src="{% static 'images/favourite.png' %}" width="50px" height="50px" id="fav">
+            <div>
+                {% if liked == 'own' %}
+                <img height="50px" id="like" src="{% static 'images/love4.png' %}" width="50px">
+
+                {% elif liked == 'no' %}
+
+                <img height="50px" id="like" src="{% static 'images/love4.png' %}" width="50px">
+                {% else %}
+                <img height="50px" id="like" src="{% static 'images/lovely.png' %}" width="50px">
+                {% endif %}
+                <div id="counter"><b>{{story.likes}}</b></div>
+            </div>
+            <br>
+            <div>
+                <img src="{% static 'images/favourite.png' %}" width="50px" height="50px" id="fav">
                 Favourites
 
-           </div>
+            </div>
 
 
-       </div>
+        </div>
 
 
-   </div>
+    </div>
 
 
-   <script>
+    <script>
 var slideIndex = 1;
 showDivs(slideIndex);
 
@@ -156,8 +157,9 @@ x[slideIndex-1].style.display = "block";
 
 
 
-   </script>
-   <script>
+
+    </script>
+    <script>
 var like = "{% static 'images/lovely.png' %}"
 var like2 = "{% static 'images/love4.png' %}"
 var counter = {{ story.likes }}
@@ -225,9 +227,10 @@ $.ajax({
 
 
 
-   </script>
 
-   <script type="text/javascript">
+    </script>
+
+    <script type="text/javascript">
  $(function () {
      $("#btnPassport").click(function () {
          if ($(this).val() == "reply") {
@@ -241,10 +244,11 @@ $.ajax({
  });
 
 
-   </script>
+
+    </script>
 
 
-   <script type="text/javascript">
+    <script type="text/javascript">
 // var clicks = 0;
 //        jQuery(function() {
 // jQuery('.targetDiv').hide()
@@ -270,10 +274,11 @@ $.ajax({
 // });
 
 //
-   </script>
+
+    </script>
 
 
-   <script>
+    <script>
 var clicks = 0;
   $(document).ready(function()
   {
@@ -383,7 +388,8 @@ $(this).val("Reply");
   });
 
 
-   </script>
+
+    </script>
 </div>
 
 

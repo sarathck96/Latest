@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from multiupload.fields import MultiFileField
@@ -110,3 +110,26 @@ class UpdateProfilePicForm(forms.ModelForm):
         widgets = {
             forms.FileInput(attrs={'class': 'form-control-file border'}),
         }
+
+
+class MultiUploadForm2(forms.ModelForm):
+    file = MultiFileField(min_num=1, max_num=4, max_file_size=1024 * 1024 * 5)
+
+    class Meta:
+        exclude = ('story', 'description')
+        model = Image
+
+    labels = {
+        'file': '*Images',
+
+    }
+
+
+class EmailValidationOnForgotPassword(PasswordResetForm):
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email__iexact=email, is_active=True).exists():
+            msg = ("There is no user registered with the specified E-Mail address.")
+            self.add_error('email', msg)
+        return email
