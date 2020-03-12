@@ -1,9 +1,11 @@
 from django.contrib import admin
-from .models import Story, Blog, Image, Comment, Reply, Profile, Favourite, Like
+from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.db import models
-from django.forms import TextInput, Textarea
-from django.contrib.auth.admin import UserAdmin
+from django.forms import Textarea, TextInput
+
+from .models import (Blog, Comment, Favourite, Image, Like, Profile, Reply,
+                     Story)
 
 
 class MyUserAdmin(UserAdmin):

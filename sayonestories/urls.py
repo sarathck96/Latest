@@ -1,4 +1,5 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
@@ -23,4 +24,7 @@ urlpatterns = [
     path('User_Stories',views.UserStories.as_view(), name='UserStories'),
     path('User_Profile/<int:pk>/', views.UserProfilePage.as_view(), name='UserProfile'),
     path('User_Profile_Update/<int:pk>/', views.UserProfileUpdate.as_view() , name='ProfileUpdate'),
+    path('Story_Detail2/<int:id>/',views.story_detail_page2, name='StoryDetail2'),
+    path('Top_Authors', views.top_authors, name='TopAuthors'),
+    path('Filter', views.filter ,name='Filter'),
 ]

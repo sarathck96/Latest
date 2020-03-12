@@ -59,7 +59,7 @@
       </li>
 
  <li class="nav-item">
-                   <a class="nav-link lora" href="" >Top Authors</a>
+                   <a class="nav-link lora" href="{% url 'TopAuthors' %}" >Top Authors</a>
                 </li>
 
  <li class="nav-item">
@@ -71,7 +71,7 @@
 
                 <li class="nav-item ml-2">
 
-<form action="" method="POST">
+<form action="{% url 'Filter' %}" method="POST">
     {% csrf_token %}
       <div class="input-group">
         <input type="text" class="form-control" placeholder="Search" name="filterparam" id="filter">

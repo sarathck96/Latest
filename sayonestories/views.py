@@ -1,21 +1,29 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, JsonResponse
-from django.urls import reverse_lazy
-from django.views import View
-from django.core.mail import send_mail
 import random
 import re
-from .forms import SignUpForm, StoryAddForm, AddBlogForm, MultiUploadForm, AddCommentForm, ReplyForm
-from .models import Profile, Like, Comment, StoryView, Reply, Story, Blog, Image, Favourite
-from django.contrib.auth.models import User
+
 from django.contrib import auth, messages
-from django.views.generic import ListView, DetailView, UpdateView
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db.models import F
-from .forms import UpdateProfilePicForm
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import DetailView, ListView, UpdateView
+
+from .forms import (AddBlogForm, AddCommentForm, MultiUploadForm, ReplyForm,
+                    SignUpForm, StoryAddForm, UpdateProfilePicForm)
+from .models import (Blog, Comment, Favourite, Image, Like, Profile, Reply,
+                     Story, StoryView)
 
 
 def home(request):
-    return render(request, 'sayonestories/Home.html', context={})
+    top_events = Story.objects.filter(stype=Story.EVENT).filter(status=Story.PUBLISH).order_by('-likes')[:3]
+    top_blogs = Story.objects.filter(stype=Story.BLOG).filter(status=Story.PUBLISH).order_by('-likes')[:3]
+    top_gallery = Story.objects.filter(stype=Story.GALLERY).filter(status=1).order_by('-likes')[:3]
+
+    context = {'events': top_events, 'blogs': top_blogs, 'gallery': top_gallery}
+    return render(request, 'sayonestories/Home.html', context)
 
 
 class RegisterView(View):
@@ -378,22 +386,71 @@ class UserProfilePage(DetailView):
         details = get_object_or_404(User, pk=kwargs['pk'])
         story_obj = Story.objects.filter(user=self.request.user)
         profile_obj = get_object_or_404(Profile, user=self.request.user)
-        context = {'profiledetails': details, 'count': story_obj.count, 'pic': profile_obj.profile_pic}
+        ff = UpdateProfilePicForm()
+        context = {'profiledetails': details, 'count': story_obj.count, 'pic': profile_obj.profile_pic, 'form': ff}
         return render(request, 'sayonestories/UserProfile.html', context)
 
 
 class UserProfileUpdate(UpdateView):
     model = User
     template_name = 'sayonestories/UserProfileEdit.html'
-    fields = ('first_name','last_name')
+    fields = ('first_name', 'last_name')
     success_url = reverse_lazy('userhome')
 
     def get_context_data(self, **kwargs):
-
         context = super(UserProfileUpdate, self).get_context_data(**kwargs)
-        context['form2'] = UpdateProfilePicForm()
-        return context
 
 
+def story_detail_page2(request, id):
+    story_obj = get_object_or_404(Story, id=id)
+    comments = Comment.objects.filter(story=story_obj)
+    if story_obj.stype in [Story.EVENT, Story.BLOG]:
+
+        context = {'blog': 'blog', 'story': story_obj, 'comments': comments}
+        return render(request, 'sayonestories/Story_Detail_Page2.html', context)
+    else:
+        sub_story_object = story_obj.image_story.all()
+
+        context1 = {'substory': sub_story_object, 'story': story_obj, 'comments': comments}
+        return render(request, 'sayonestories/story_detail_page2.html', context=context1)
 
 
+def top_authors(request):
+    users_and_like = []
+    all_users = User.objects.all()
+    for user in all_users:
+        like_count = 0
+        story_obj = Story.objects.filter(user=user)
+        for story in story_obj:
+            like_count = like_count + story.likes
+        users_and_like.append(tuple((user.username, like_count)))
+
+    top_users = sorted(users_and_like, key=lambda t: t[1], reverse=True)[:3]
+
+    top_authors = []
+    for i in range(0, 3):
+        user = User.objects.filter(username=top_users[i][0])[0]
+        sayoneuser = Profile.objects.filter(user=user)[0]
+        temp_dict = {}
+        temp_dict['pic'] = sayoneuser.profile_pic
+        temp_dict['name'] = sayoneuser.user.get_full_name()
+        temp_dict['likes'] = top_users[i][1]
+        top_authors.append(temp_dict)
+
+    return render(request, 'sayonestories/Top_Authors.html', context={'authors': top_authors})
+
+
+def filter(request):
+    param = request.POST.get('filterparam')
+
+    results = Story.objects.filter(Q(title__icontains=param))
+    context = {'stories': results}
+    if len(results) == 0:
+        results = Blog.objects.filter(Q(description__icontains=param))
+        results2 = ''
+        for item in results:
+            results2 = Story.objects.filter(title=item)
+
+        context = {'stories': results2}
+
+    return render(request, 'sayonestories/FilteredResults.html', context)

@@ -1,9 +1,10 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
-from .models import Story, Blog, Image, Comment, Reply, Profile
 from multiupload.fields import MultiFileField
+
+from .models import Blog, Comment, Image, Profile, Reply, Story
 
 
 class SignUpForm(UserCreationForm):
